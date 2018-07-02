@@ -4,17 +4,14 @@ import com.code.analyze.demo.type.MethodCall;
 import com.code.analyze.demo.type.classreading.MethodCallReader;
 import com.code.analyze.demo.type.classreading.MethodCallReaderFactory;
 import com.code.analyze.demo.type.classreading.SimpleMethodCallReaderFactory;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.Scanner;
 
 /**
  * @author Ethan Zhang
  * @email ethan.zj@antfin.com
  */
-public class DefaultCodeAnalzer implements CodeAnalzer {
+public class DefaultCodeAnalyzer implements CodeAnalyzer {
 
     private final MethodCallReaderFactory methodCallReaderFactory = new SimpleMethodCallReaderFactory();
 
@@ -25,8 +22,7 @@ public class DefaultCodeAnalzer implements CodeAnalzer {
             reader = methodCallReaderFactory.getReader(TestCase.class.getName(), "hello", "java.lang.String");
             recursive(reader);
 
-            MethodCall methodCall = reader.getMethodCall();
-            return methodCall;
+            return reader.getMethodCall();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

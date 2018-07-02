@@ -9,8 +9,8 @@ import com.code.analyze.demo.type.MethodCall;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        CodeAnalzer codeAnalzer = new DefaultCodeAnalzer();
-        MethodCall methodCall = codeAnalzer.analyze(TestCase.class.getName(), "hello", "java.lang.String");
+        CodeAnalyzer codeAnalyzer = new DefaultCodeAnalyzer();
+        MethodCall methodCall = codeAnalyzer.analyze(TestCase.class.getName(), "hello", "java.lang.String");
         if (methodCall != null) {
             System.out.println(methodCall.render());
         }

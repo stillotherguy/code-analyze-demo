@@ -10,7 +10,6 @@ public class TestCase {
         System.out.println("obj construct");
     }
 
-    @Resource
     private Object obj;
 
     private Map<String, Object> hello(String name) {
@@ -38,8 +37,8 @@ public class TestCase {
 ```
 堆栈分析api：
 ```
-CodeAnalzer codeAnalzer = new DefaultCodeAnalzer();
-MethodCall methodCall = codeAnalzer.analyze(TestCase.class.getName(), "hello", "java.lang.String");
+CodeAnalzer codeAnalyzer = new DefaultCodeAnalzer();
+MethodCall methodCall = codeAnalyzer.analyze(TestCase.class.getName(), "hello", "java.lang.String");
 if (methodCall != null) {
     System.out.println(methodCall.render());
 }
