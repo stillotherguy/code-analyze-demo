@@ -7,6 +7,6 @@ package com.code.analyze.demo.type.filter;
 public class EmptyClassFilter implements ClassFilter {
     @Override
     public boolean filter(String name) {
-        return true;
+        return false;
     }
 }

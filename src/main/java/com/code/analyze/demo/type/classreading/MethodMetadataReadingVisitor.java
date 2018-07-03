@@ -21,25 +21,12 @@ import com.code.analyze.demo.type.MethodCall;
 import com.code.analyze.demo.type.MethodMetadata;
 import com.code.analyze.demo.type.filter.ClassFilter;
 import com.code.analyze.demo.type.filter.ConstructorMethodFilter;
-import com.code.analyze.demo.type.filter.JdkClassFilter;
 import com.code.analyze.demo.type.filter.MethodFilter;
 import com.code.analyze.demo.utils.ClassUtils;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-/**
- * ASM method visitor which looks for the annotations defined on a method,
- * exposing them through the {@link MethodMetadata}
- * interface.
- *
- * @author Juergen Hoeller
- * @author Mark Pollack
- * @author Costin Leau
- * @author Chris Beams
- * @author Phillip Webb
- * @since 3.0
- */
 public class MethodMetadataReadingVisitor extends MethodVisitor {
 
     private final ClassMetadata classMetadata;
@@ -50,12 +37,13 @@ public class MethodMetadataReadingVisitor extends MethodVisitor {
 
     private final MethodFilter methodFilter = new ConstructorMethodFilter();
 
-    private final ClassFilter classFilter = new JdkClassFilter();
+    private ClassFilter classFilter;
 
     private int lineNumber;
 
-    public MethodMetadataReadingVisitor(ClassMetadata classMetadata, MethodCall methodCall, MethodCall parent) {
+    public MethodMetadataReadingVisitor(ClassFilter classFilter, ClassMetadata classMetadata, MethodCall methodCall, MethodCall parent) {
         super(Opcodes.ASM6);
+        this.classFilter = classFilter;
         this.classMetadata = classMetadata;
         this.methodCall = methodCall;
         this.parent = parent;
@@ -65,29 +53,30 @@ public class MethodMetadataReadingVisitor extends MethodVisitor {
     public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
         String className = ClassUtils.convertResourcePathToClassName(owner);
         MethodMetadata methodMetadata = methodCall.getMethodMetadata();
-        // 防止直接递归调用
-        boolean recusive = false;
-        if (className.equals(classMetadata.getClassName()) && name.equals(methodMetadata.getMethodName()) && desc.equals(methodMetadata.getDescriptor())) {
-            // warn
-            recusive = true;
+
+        if (classFilter.filter(className) || methodFilter.filter(name, desc)) {
+            return;
         }
 
-        if (/*classFilter.filter(className) || */methodFilter.filter(name, desc)) {
-            return;
+        // 防止直接递归调用
+        boolean recur = false;
+        if (className.equals(classMetadata.getClassName()) && name.equals(methodMetadata.getMethodName()) && desc.equals(methodMetadata.getDescriptor())) {
+            // warn
+            recur = true;
         }
 
         MethodCall parent = this.parent;
         while (parent != null) {
             if (className.equals(parent.getMethodMetadata().getDeclaringClassName()) && name.equals(parent.getMethodMetadata().getMethodName()) && desc.equals(parent.getMethodMetadata().getDescriptor())) {
                 // warn
-                recusive = true;
+                recur = true;
                 break;
             }
 
             parent = parent.getParent();
         }
 
-        MethodCall methodCall = MethodCall.newMethodCall(lineNumber, owner, name, desc, recusive);
+        MethodCall methodCall = MethodCall.newMethodCall(lineNumber, owner, name, desc, recur);
         this.methodCall.getDirectChildren().add(methodCall);
     }
 

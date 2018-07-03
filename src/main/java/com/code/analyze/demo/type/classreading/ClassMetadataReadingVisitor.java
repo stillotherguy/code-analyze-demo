@@ -21,6 +21,7 @@ import com.code.analyze.demo.type.DefaultClassMetadata;
 import com.code.analyze.demo.type.DefaultMethodMetadata;
 import com.code.analyze.demo.type.MethodCall;
 import com.code.analyze.demo.type.filter.ClassFilter;
+import com.code.analyze.demo.type.filter.EmptyClassFilter;
 import com.code.analyze.demo.type.filter.JdkClassFilter;
 import com.code.analyze.demo.utils.ClassUtils;
 import org.objectweb.asm.*;
@@ -39,7 +40,7 @@ class ClassMetadataReadingVisitor extends ClassVisitor {
 
     private boolean inRecursive;
 
-    private final ClassFilter classFilter = new JdkClassFilter();
+    private final ClassFilter classFilter = new EmptyClassFilter();
 
     private final String methodName;
 
@@ -65,9 +66,9 @@ class ClassMetadataReadingVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        /*if (classMetadata == null) {
+        if (classMetadata == null) {
             return new EmptyMethodVisitor();
-        }*/
+        }
 
         Type[] argTypes = Type.getArgumentTypes(desc);
         String[] types = new String[argTypes.length];
@@ -83,16 +84,6 @@ class ClassMetadataReadingVisitor extends ClassVisitor {
             return new EmptyMethodVisitor();
         }
 
-        // 防止跨层级递归调用
-        /*MethodMetadata parent = methodMetadata.getParent();
-        while (parent != null) {
-            if (parent.equals(methodMetadata)) {
-                return new EmptyMethodVisitor();
-            }
-
-            parent = parent.getParent();
-        }*/
-
         DefaultMethodMetadata methodMetadata = DefaultMethodMetadata.newMethodMetadata(access, classMetadata.getClassName(), name, desc, signature, exceptions);
         if (methodCall == null) {
             methodCall = new MethodCall();
@@ -106,14 +97,14 @@ class ClassMetadataReadingVisitor extends ClassVisitor {
             return new EmptyMethodVisitor();
         }
 
-        return new MethodMetadataReadingVisitor(classMetadata, this.methodCall, this.parent);
+        return new MethodMetadataReadingVisitor(classFilter, classMetadata, this.methodCall, this.parent);
     }
 
     @Override
     public void visit(int version, int access, String name, String signature, String supername, String[] interfaces) {
-        /*if (classFilter.filter(ClassUtils.convertResourcePathToClassName(name))) {
+        if (classFilter.filter(ClassUtils.convertResourcePathToClassName(name))) {
             return;
-        }*/
+        }
 
         classMetadata = DefaultClassMetadata.newMetadata(version, access, name, signature, supername, interfaces);
     }

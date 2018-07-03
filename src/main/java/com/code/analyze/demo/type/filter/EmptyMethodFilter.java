@@ -7,6 +7,6 @@ package com.code.analyze.demo.type.filter;
 public class EmptyMethodFilter implements MethodFilter {
     @Override
     public boolean filter(String name, String desc) {
-        return true;
+        return false;
     }
 }

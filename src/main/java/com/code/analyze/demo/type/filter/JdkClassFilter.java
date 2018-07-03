@@ -7,6 +7,6 @@ package com.code.analyze.demo.type.filter;
 public class JdkClassFilter implements ClassFilter {
     @Override
     public boolean filter(String name) {
-        return !name.startsWith("java");
+        return name.startsWith("java");
     }
 }
