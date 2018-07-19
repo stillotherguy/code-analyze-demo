@@ -7,19 +7,21 @@ import java.io.StringReader;
 import java.util.Scanner;
 
 /**
+ * 深度优先遍历渲染策略
+ *
  * @author Ethan Zhang
  * @email ethan.zj@antfin.com
  */
-public class RecursiveRenderStrategy implements RenderStrategy {
+public class DepthFirstTraversalRenderStrategy implements RenderStrategy {
 
-    private static RecursiveRenderStrategy strategy = new RecursiveRenderStrategy();
+    private static DepthFirstTraversalRenderStrategy strategy = new DepthFirstTraversalRenderStrategy();
 
     private static final String STEP_HAS_BOARD = "|   ";
     private static final String STEP_EMPTY_BOARD = "    ";
     private static final String STEP_FIRST_CHAR = "`---";
     private static final String STEP_NORMAL_CHAR = "+---";
 
-    public static RecursiveRenderStrategy getInstance() {
+    public static DepthFirstTraversalRenderStrategy getInstance() {
         return strategy;
     }
 
